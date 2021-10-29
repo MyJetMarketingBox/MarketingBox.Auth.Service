@@ -27,11 +27,11 @@
       $(TargetsForTfmSpecificBuildOutput);PackReferencedProjectOutputs
     </TargetsForTfmSpecificBuildOutput>
     <PackageId>MarketingBox.Auth.Service.Client</PackageId>
-    <Authors>MyJetWallet</Authors>
-    <Company>MyJetWallet</Company>
+    <Authors>MyJetMarketingBox</Authors>
+    <Company>MyJetMarketingBox</Company>
     <Product>MarketingBox</Product>
-    <PackageProjectUrl>https://github.com/MyJetWallet/MarketingBox.Auth.Service</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/MyJetWallet/MarketingBox.Auth.Service</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/MyJetMarketingBox/MarketingBox.Auth.Service</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MyJetMarketingBox/MarketingBox.Auth.Service</RepositoryUrl>
   </PropertyGroup>
 
   <Target Name="PackReferencedProjectOutputs" DependsOnTargets="BuildOnlySettings;ResolveReferences">
