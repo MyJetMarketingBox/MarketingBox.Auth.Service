@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using MarketingBox.Auth.Service.Domain.Models.Users;
 
 namespace MarketingBox.Auth.Service.Grpc.Models.Users
 {
@@ -22,6 +23,9 @@ namespace MarketingBox.Auth.Service.Grpc.Models.Users
 
         [DataMember(Order = 6)]
         public string ExternalUserId { get; set; }
+
+        [DataMember(Order = 7)]
+        public UserRole Role { get; set; }
 
     }
 }

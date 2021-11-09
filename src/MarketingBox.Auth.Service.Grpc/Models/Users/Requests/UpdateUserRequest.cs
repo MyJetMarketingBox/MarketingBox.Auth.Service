@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using Destructurama.Attributed;
+using MarketingBox.Auth.Service.Domain.Models.Users;
 
 namespace MarketingBox.Auth.Service.Grpc.Models.Users.Requests
 {
@@ -22,6 +23,9 @@ namespace MarketingBox.Auth.Service.Grpc.Models.Users.Requests
 
         [DataMember(Order = 5)]
         public string ExternalUserId { get; set; }
+
+        [DataMember(Order = 6)]
+        public UserRole Role { get; set; }
 
     }
 }

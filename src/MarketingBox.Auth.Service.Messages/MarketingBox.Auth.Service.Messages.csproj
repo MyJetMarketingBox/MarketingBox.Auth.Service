@@ -8,4 +8,8 @@
     <PackageReference Include="MyJetWallet.Sdk.ServiceBus" Version="1.2.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MarketingBox.Auth.Service.Domain.Models\MarketingBox.Auth.Service.Domain.Models.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -33,9 +33,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketingBox.Auth.Service.M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketingBox.Auth.Service.Messages", "src\MarketingBox.Auth.Service.Messages\MarketingBox.Auth.Service.Messages.csproj", "{CC5BF533-CD43-4B52-8379-77D228F5989F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketingBox.Auth.Service.Postgre", "src\MarketingBox.Auth.Service.Postgre\MarketingBox.Auth.Service.Postgre.csproj", "{2BEEA209-4B8A-4091-AF46-B14FF8732B25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketingBox.Auth.Service.Postgre", "src\MarketingBox.Auth.Service.Postgre\MarketingBox.Auth.Service.Postgre.csproj", "{2BEEA209-4B8A-4091-AF46-B14FF8732B25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketingBox.Auth.Service.Crypto", "src\MarketingBox.Auth.Service.Crypto\MarketingBox.Auth.Service.Crypto.csproj", "{C428A9F1-886F-464E-9896-C0AE88FE4545}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketingBox.Auth.Service.Crypto", "src\MarketingBox.Auth.Service.Crypto\MarketingBox.Auth.Service.Crypto.csproj", "{C428A9F1-886F-464E-9896-C0AE88FE4545}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketingBox.Auth.Service.Domain.Models", "src\MarketingBox.Auth.Service.Domain.Models\MarketingBox.Auth.Service.Domain.Models.csproj", "{FBE435F8-4E59-4F09-934D-D6F2FB7C29D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,10 @@ Global
 		{C428A9F1-886F-464E-9896-C0AE88FE4545}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C428A9F1-886F-464E-9896-C0AE88FE4545}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C428A9F1-886F-464E-9896-C0AE88FE4545}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBE435F8-4E59-4F09-934D-D6F2FB7C29D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBE435F8-4E59-4F09-934D-D6F2FB7C29D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBE435F8-4E59-4F09-934D-D6F2FB7C29D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBE435F8-4E59-4F09-934D-D6F2FB7C29D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,6 +103,7 @@ Global
 		{CC5BF533-CD43-4B52-8379-77D228F5989F} = {446301A0-97F2-4921-BA0B-32B76039C73B}
 		{2BEEA209-4B8A-4091-AF46-B14FF8732B25} = {446301A0-97F2-4921-BA0B-32B76039C73B}
 		{C428A9F1-886F-464E-9896-C0AE88FE4545} = {446301A0-97F2-4921-BA0B-32B76039C73B}
+		{FBE435F8-4E59-4F09-934D-D6F2FB7C29D6} = {446301A0-97F2-4921-BA0B-32B76039C73B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6BF00C9D-AD55-40F2-8FE3-E5C3559B3E26}

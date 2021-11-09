@@ -1,4 +1,6 @@
-﻿namespace MarketingBox.Auth.Service.Postgre.Entities.Users
+﻿using MarketingBox.Auth.Service.Domain.Users;
+
+namespace MarketingBox.Auth.Service.Postgre.Entities.Users
 {
     public class UserEntity
     {
@@ -13,6 +15,7 @@
         public string Salt { get; set; }
 
         public string PasswordHash { get; set; }
-        
+
+        public UserRole Role { get; set; }
     }
 }

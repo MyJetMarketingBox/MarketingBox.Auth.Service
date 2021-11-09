@@ -36,7 +36,7 @@ namespace MarketingBox.Auth.Service
 
             Settings = SettingsReader.GetSettings<SettingsModel>(SettingsFileName);
 
-            using var loggerFactory = LogConfigurator.ConfigureElk("MyJetWallet", Settings.SeqServiceUrl, Settings.ElkLogs);
+            using var loggerFactory = LogConfigurator.ConfigureElk("MarketingBox.Auth.Service", Settings.SeqServiceUrl);
 
             var logger = loggerFactory.CreateLogger<Program>();
 

@@ -8,11 +8,8 @@ namespace MarketingBox.Auth.Service.Settings
         [YamlProperty("MarketingBoxAuthService.SeqServiceUrl")]
         public string SeqServiceUrl { get; set; }
 
-        [YamlProperty("MarketingBoxAuthService.ZipkinUrl")]
-        public string ZipkinUrl { get; set; }
-
-        [YamlProperty("MarketingBoxAuthService.ElkLogs")]
-        public LogElkSettings ElkLogs { get; set; }
+        [YamlProperty("MarketingBoxAuthService.JaegerUrl")]
+        public string JaegerUrl { get; set; }
 
         [YamlProperty("MarketingBoxAuthService.MarketingBoxServiceBusHostPort")]
         public string MarketingBoxServiceBusHostPort { get; set; }

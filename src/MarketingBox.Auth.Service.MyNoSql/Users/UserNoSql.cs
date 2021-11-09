@@ -1,4 +1,5 @@
-﻿using MyNoSqlServer.Abstractions;
+﻿using MarketingBox.Auth.Service.Domain.Models.Users;
+using MyNoSqlServer.Abstractions;
 
 namespace MarketingBox.Auth.Service.MyNoSql.Users
 {
@@ -19,6 +20,8 @@ namespace MarketingBox.Auth.Service.MyNoSql.Users
         public string Salt { get; set; }
 
         public string PasswordHash { get; set; }
+
+        public UserRole Role { get; set; }
         
 
         public static UserNoSql Create(
@@ -27,7 +30,8 @@ namespace MarketingBox.Auth.Service.MyNoSql.Users
             string username,
             string externalUserId,
             string salt,
-            string passwordHash) =>
+            string passwordHash,
+            UserRole userRole) =>
             new()
             {
                 PartitionKey = GeneratePartitionKey(tenantId),
@@ -37,7 +41,8 @@ namespace MarketingBox.Auth.Service.MyNoSql.Users
                 Salt = salt,
                 Username = username,
                 EmailEncrypted = emailEncrypted,
-                ExternalUserId = externalUserId
+                ExternalUserId = externalUserId,
+                Role = userRole
             };
     }
 }

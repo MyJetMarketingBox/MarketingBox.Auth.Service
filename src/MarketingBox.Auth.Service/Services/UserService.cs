@@ -13,6 +13,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketingBox.Auth.Service.Crypto;
+using MarketingBox.Auth.Service.Domain;
+using MarketingBox.Auth.Service.Domain.Users;
 using MarketingBox.Auth.Service.MyNoSql.Users;
 using MarketingBox.Auth.Service.Postgre.Entities.Users;
 using MarketingBox.Auth.Service.Settings;
@@ -71,7 +73,8 @@ namespace MarketingBox.Auth.Service.Services
                     PasswordHash = passwordHash,
                     Salt = salt,
                     TenantId = request.TenantId,
-                    Username = request.Username
+                    Username = request.Username,
+                    Role = request.Role.MapEnum<UserRole>()
                 };
 
                 ctx.Users.Add(userEntity);
@@ -130,6 +133,7 @@ namespace MarketingBox.Auth.Service.Services
                     Salt = salt,
                     TenantId = request.TenantId,
                     Username = request.Username,
+                    Role = request.Role.MapEnum<UserRole>()
                 };
 
                 ctx.Users.Upsert(userEntity);
@@ -258,6 +262,7 @@ namespace MarketingBox.Auth.Service.Services
                     EmailEncrypted = userEntity.EmailEncrypted,
                     TenantId = userEntity.TenantId,
                     ExternalUserId = userEntity.ExternalUserId,
+                    Role = userEntity.Role.MapEnum<Domain.Models.Users.UserRole>()
                 }
             };
         }
@@ -272,6 +277,7 @@ namespace MarketingBox.Auth.Service.Services
                 EmailEncrypted = userEntity.EmailEncrypted,
                 TenantId = userEntity.TenantId,
                 ExternalUserId = userEntity.ExternalUserId,
+                Role = userEntity.Role.MapEnum<Domain.Models.Users.UserRole>()
             };
         }
 
@@ -283,7 +289,8 @@ namespace MarketingBox.Auth.Service.Services
                 userEntity.Username,
                 userEntity.ExternalUserId,
                 userEntity.Salt,
-                userEntity.PasswordHash);
+                userEntity.PasswordHash,
+                userEntity.Role.MapEnum<Domain.Models.Users.UserRole>());
         }
     }
 }

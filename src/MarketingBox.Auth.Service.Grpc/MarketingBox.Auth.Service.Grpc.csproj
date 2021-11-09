@@ -9,4 +9,8 @@
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MarketingBox.Auth.Service.Domain.Models\MarketingBox.Auth.Service.Domain.Models.csproj" />
+  </ItemGroup>
+
 </Project>

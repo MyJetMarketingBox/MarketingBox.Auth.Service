@@ -4,6 +4,7 @@ using MarketingBox.Auth.Service.Grpc.Models.Users.Requests;
 using ProtoBuf.Grpc.Client;
 using System;
 using System.Threading.Tasks;
+using MarketingBox.Auth.Service.Domain.Models.Users;
 
 namespace TestApp
 {
@@ -20,7 +21,7 @@ namespace TestApp
             var client = factory.GetUserService();
 
             var password = "qwerty_123456";
-            var email = "some-email@gmail.com";
+            var email = "general-manager@gmail.com";
             var email2 = "some-email2@gmail.com";
 
             var resp = await  client.CreateAsync(new CreateUserRequest()
@@ -29,16 +30,18 @@ namespace TestApp
                 Email = email,
                 Password = password,
                 TenantId = "default-tenant-id",
-                Username = "SomeUser"
+                Username = "GeneralUser",
+                Role = UserRole.Admin
             });
 
             var updResponse = await client.UpdateAsync(new UpdateUserRequest()
             {
                 ExternalUserId = "GeneralManager",
-                Email = email2,
+                Email = email,
                 Password = password,
                 TenantId = "default-tenant-id",
-                Username = "SomeUser"
+                Username = "SomeUser",
+                Role = UserRole.Admin
             });
 
             var get1 = await client.GetAsync(new GetUserRequest()

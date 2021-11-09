@@ -22,4 +22,8 @@
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="5.2.17" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MarketingBox.Auth.Service.Domain\MarketingBox.Auth.Service.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
