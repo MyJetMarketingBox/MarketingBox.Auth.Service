@@ -7,6 +7,7 @@ namespace MarketingBox.Auth.Service.Domain.Users
         Affiliate,
         MasterAffiliate,
         AffiliateManager,
-        Admin, 
+        Admin,
+        MasterAffiliateReferral,
     }
 }
