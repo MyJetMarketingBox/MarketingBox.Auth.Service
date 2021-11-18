@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MyJetWallet.Sdk.ServiceBus" Version="1.2.3" />
+    <PackageReference Include="MyJetWallet.Sdk.ServiceBus" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
