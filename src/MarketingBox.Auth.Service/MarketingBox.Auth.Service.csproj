@@ -27,7 +27,7 @@
     <PackageReference Include="SimpleTrading.ServiceStatusReporterConnector" Version="1.0.9" />
     <PackageReference Include="MySettingsReader" Version="1.2.1" />
     <PackageReference Include="SimpleTrading.Telemetry" Version="1.0.3" />
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="6.13.7" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="6.13.8" />
   </ItemGroup>
 
   <ItemGroup>
