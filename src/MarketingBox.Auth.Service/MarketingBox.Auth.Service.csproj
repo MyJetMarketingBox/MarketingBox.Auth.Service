@@ -8,15 +8,15 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.40.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.42.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="MyJetWallet.Sdk.GrpcMetrics" Version="2.0.4" />
     <PackageReference Include="MyJetWallet.Sdk.GrpcSchema" Version="1.0.6" />
     <PackageReference Include="MyJetWallet.Sdk.NoSql" Version="2.0.2" />
-    <PackageReference Include="MyJetWallet.Sdk.Postgres" Version="2.1.0" />
-    <PackageReference Include="MyJetWallet.Sdk.Service" Version="2.1.5" />
+    <PackageReference Include="MyJetWallet.Sdk.Postgres" Version="2.2.0" />
+    <PackageReference Include="MyJetWallet.Sdk.Service" Version="2.1.6" />
     <PackageReference Include="MyJetWallet.Sdk.ServiceBus" Version="2.1.0" />
     <PackageReference Include="MyNoSqlServer.Abstractions" Version="1.0.5" />
     <PackageReference Include="MyNoSqlServer.DataWriter" Version="1.4.2" />
@@ -27,7 +27,7 @@
     <PackageReference Include="SimpleTrading.ServiceStatusReporterConnector" Version="1.0.9" />
     <PackageReference Include="MySettingsReader" Version="1.2.1" />
     <PackageReference Include="SimpleTrading.Telemetry" Version="1.0.3" />
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="6.13.2" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="6.13.8" />
   </ItemGroup>
 
   <ItemGroup>
