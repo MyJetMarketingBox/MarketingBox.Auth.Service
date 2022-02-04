@@ -235,7 +235,7 @@ namespace MarketingBox.Auth.Service.Services
                 await ctx.Users
                     .Where(x =>
                         x.TenantId == request.TenantId &&
-                        x.ExternalUserId == request.ExternalUserId).DeleteAsync();
+                        x.ExternalUserId == request.ExternalUserId).DeleteFromQueryAsync();
 
                 return new UserResponse();
             }
