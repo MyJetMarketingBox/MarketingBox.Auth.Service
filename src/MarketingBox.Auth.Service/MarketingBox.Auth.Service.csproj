@@ -17,7 +17,7 @@
     <PackageReference Include="MyJetWallet.Sdk.NoSql" Version="2.0.2" />
     <PackageReference Include="MyJetWallet.Sdk.Postgres" Version="2.2.0" />
     <PackageReference Include="MyJetWallet.Sdk.Service" Version="2.1.6" />
-    <PackageReference Include="MyJetWallet.Sdk.ServiceBus" Version="2.1.0" />
+    <PackageReference Include="MyJetWallet.Sdk.ServiceBus" Version="2.2.1" />
     <PackageReference Include="MyNoSqlServer.Abstractions" Version="1.0.5" />
     <PackageReference Include="MyNoSqlServer.DataWriter" Version="1.4.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -27,7 +27,7 @@
     <PackageReference Include="SimpleTrading.ServiceStatusReporterConnector" Version="1.0.9" />
     <PackageReference Include="MySettingsReader" Version="1.2.2" />
     <PackageReference Include="SimpleTrading.Telemetry" Version="1.0.3" />
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="6.13.8" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="6.13.9" />
   </ItemGroup>
 
   <ItemGroup>
