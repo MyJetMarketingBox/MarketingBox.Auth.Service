@@ -1,15 +1,13 @@
-﻿using DotNetCoreDecorators;
-using MarketingBox.Auth.Service.Grpc;
-using MarketingBox.Auth.Service.Grpc.Models.Common;
+﻿using MarketingBox.Auth.Service.Grpc;
 using MarketingBox.Auth.Service.Grpc.Models.Users;
 using MarketingBox.Auth.Service.Grpc.Models.Users.Requests;
 using MarketingBox.Auth.Service.Messages.Users;
-using MarketingBox.Auth.Service.MyNoSql;
 using MarketingBox.Auth.Service.Postgre;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyNoSqlServer.Abstractions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketingBox.Auth.Service.Crypto;
@@ -18,9 +16,12 @@ using MarketingBox.Auth.Service.Domain.Users;
 using MarketingBox.Auth.Service.MyNoSql.Users;
 using MarketingBox.Auth.Service.Postgre.Entities.Users;
 using MarketingBox.Auth.Service.Settings;
+using MarketingBox.Sdk.Common.Exceptions;
+using MarketingBox.Sdk.Common.Extensions;
+using MarketingBox.Sdk.Common.Models;
+using MarketingBox.Sdk.Common.Models.Grpc;
 using MyJetWallet.Sdk.ServiceBus;
 using Npgsql;
-using Z.EntityFramework.Plus;
 
 namespace MarketingBox.Auth.Service.Services
 {
@@ -51,13 +52,13 @@ namespace MarketingBox.Auth.Service.Services
             _settingsModel = settingsModel;
         }
 
-        public async Task<UserResponse> CreateAsync(CreateUserRequest request)
+        public async Task<Response<User>> CreateAsync(CreateUserRequest request)
         {
-            _logger.LogInformation("Creating new User {@context}", request);
-            using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
-
             try
             {
+                _logger.LogInformation("Creating new User {@context}", request);
+                await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
+
                 var encryptedEmail = _cryptoService.Encrypt(
                     request.Email,
                     _settingsModel.EncryptionSalt,
@@ -93,30 +94,29 @@ namespace MarketingBox.Auth.Service.Services
                       pgException.SqlState == PostgresErrorCodes.UniqueViolation)
             {
                 _logger.LogError(exception, "Error during user creation. {@context}", request);
-
-                return new UserResponse()
+                return new Response<User>
                 {
-                    Error = new Error() { ErrorType = ErrorType.InvalidParameter, Message = "User already exists" }
+                    Status = ResponseStatus.BadRequest,
+                    Error = new Error
+                    {
+                        ErrorMessage = "User already exists."
+                    }
                 };
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error during user creation. {@context}", request);
-
-                return new UserResponse()
-                {
-                    Error = new Error() { ErrorType = ErrorType.Unknown, Message = e.Message }
-                };
+                return e.FailedResponse<User>();
             }
         }
 
-        public async Task<UserResponse> UpdateAsync(UpdateUserRequest request)
+        public async Task<Response<User>> UpdateAsync(UpdateUserRequest request)
         {
-            _logger.LogInformation("Updating User {@context}", request);
-            using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
-
             try
             {
+                _logger.LogInformation("Updating User {@context}", request);
+                await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
+
                 var encryptedEmail = _cryptoService.Encrypt(
                     request.Email,
                     _settingsModel.EncryptionSalt,
@@ -151,19 +151,16 @@ namespace MarketingBox.Auth.Service.Services
             {
                 _logger.LogError(e, "Error during user update. {@context}", request);
 
-                return new UserResponse()
-                {
-                    Error = new Error() { ErrorType = ErrorType.Unknown, Message = e.Message }
-                };
+                return e.FailedResponse<User>();
             }
         }
 
-        public async Task<ManyUsersResponse> GetAsync(GetUserRequest request)
+        public async Task<Response<IReadOnlyCollection<User>>> GetAsync(GetUserRequest request)
         {
-            using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
-
             try
             {
+                await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
+
                 var query = ctx.Users.AsQueryable();
 
                 if (!string.IsNullOrEmpty(request.TenantId))
@@ -193,36 +190,39 @@ namespace MarketingBox.Auth.Service.Services
 
                 var userEntity = await query.ToArrayAsync();
 
-                return userEntity != null ? new ManyUsersResponse()
+                if (userEntity.Length == 0)
                 {
-                    User = userEntity.Select(x => MapToResponse(x).User).ToArray()
-                } : new ManyUsersResponse();
+                    throw new NotFoundException(NotFoundException.DefaultMessage);
+                }
+
+                return new Response<IReadOnlyCollection<User>>
+                {
+                    Status = ResponseStatus.Ok,
+                    Data = userEntity.Select(Map).ToArray()
+                };
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error during user get. {@context}", request);
 
-                return new ManyUsersResponse()
-                {
-                    Error = new Error() { ErrorType = ErrorType.Unknown, Message = e.Message }
-                };
+                return e.FailedResponse<IReadOnlyCollection<User>>();
             }
         }
 
-        public async Task<UserResponse> DeleteAsync(DeleteUserRequest request)
+        public async Task<Response<User>> DeleteAsync(DeleteUserRequest request)
         {
-            using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
-
             try
             {
+                await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
+
                 var userEntity = await ctx.Users.FirstOrDefaultAsync(x =>
                     x.TenantId == request.TenantId &&
                     x.ExternalUserId == request.ExternalUserId);
 
                 if (userEntity == null)
-                    return new UserResponse();
+                    return new Response<User>();
 
-                await _myNoSqlServerDataWriter.DeleteAsync(UserNoSql.GeneratePartitionKey(userEntity.TenantId), 
+                await _myNoSqlServerDataWriter.DeleteAsync(UserNoSql.GeneratePartitionKey(userEntity.TenantId),
                     UserNoSql.GenerateRowKey(userEntity.EmailEncrypted));
 
                 await _publisherUserRemoved.PublishAsync(new UserRemoved()
@@ -237,33 +237,36 @@ namespace MarketingBox.Auth.Service.Services
                         x.TenantId == request.TenantId &&
                         x.ExternalUserId == request.ExternalUserId).DeleteFromQueryAsync();
 
-                return new UserResponse();
+                return new Response<User>();
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error during user get. {@context}", request);
 
-                return new UserResponse()
-                {
-                    Error = new Error() { ErrorType = ErrorType.Unknown, Message = e.Message }
-                };
+                return e.FailedResponse<User>();
             }
         }
 
-        private UserResponse MapToResponse(UserEntity userEntity)
+        private Response<User> MapToResponse(UserEntity userEntity)
         {
-            return new UserResponse()
+            return new Response<User>()
             {
-                User = new User()
-                {
-                    Username = userEntity.Username,
-                    Salt = userEntity.Salt,
-                    PasswordHash = userEntity.PasswordHash,
-                    EmailEncrypted = userEntity.EmailEncrypted,
-                    TenantId = userEntity.TenantId,
-                    ExternalUserId = userEntity.ExternalUserId,
-                    Role = userEntity.Role.MapEnum<Domain.Models.Users.UserRole>()
-                }
+                Status = ResponseStatus.Ok,
+                Data = Map(userEntity)
+            };
+        }
+
+        private static User Map(UserEntity userEntity)
+        {
+            return new User()
+            {
+                Username = userEntity.Username,
+                Salt = userEntity.Salt,
+                PasswordHash = userEntity.PasswordHash,
+                EmailEncrypted = userEntity.EmailEncrypted,
+                TenantId = userEntity.TenantId,
+                ExternalUserId = userEntity.ExternalUserId,
+                Role = userEntity.Role.MapEnum<Domain.Models.Users.UserRole>()
             };
         }
 

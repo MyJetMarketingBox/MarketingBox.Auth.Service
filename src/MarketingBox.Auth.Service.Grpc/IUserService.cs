@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MarketingBox.Auth.Service.Grpc.Models;
 using MarketingBox.Auth.Service.Grpc.Models.Users;
 using MarketingBox.Auth.Service.Grpc.Models.Users.Requests;
+using MarketingBox.Sdk.Common.Models.Grpc;
 
 namespace MarketingBox.Auth.Service.Grpc
 {
@@ -11,15 +12,15 @@ namespace MarketingBox.Auth.Service.Grpc
     public interface IUserService
     {
         [OperationContract]
-        Task<UserResponse> CreateAsync(CreateUserRequest request);
+        Task<Response<User>> CreateAsync(CreateUserRequest request);
         
         [OperationContract]
-        Task<UserResponse> UpdateAsync(UpdateUserRequest request);
+        Task<Response<User>> UpdateAsync(UpdateUserRequest request);
         
         [OperationContract]
-        Task<ManyUsersResponse> GetAsync(GetUserRequest request);
+        Task<Response<IReadOnlyCollection<User>>> GetAsync(GetUserRequest request);
         
         [OperationContract]
-        Task<UserResponse> DeleteAsync(DeleteUserRequest request);
+        Task<Response<User>> DeleteAsync(DeleteUserRequest request);
     }
 }
