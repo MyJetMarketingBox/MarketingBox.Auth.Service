@@ -209,7 +209,7 @@ namespace MarketingBox.Auth.Service.Services
             }
         }
 
-        public async Task<Response<User>> DeleteAsync(DeleteUserRequest request)
+        public async Task<Response<bool>> DeleteAsync(DeleteUserRequest request)
         {
             try
             {
@@ -220,7 +220,7 @@ namespace MarketingBox.Auth.Service.Services
                     x.ExternalUserId == request.ExternalUserId);
 
                 if (userEntity == null)
-                    return new Response<User>();
+                    throw new NotFoundException(nameof(request.ExternalUserId),request.ExternalUserId);
 
                 await _myNoSqlServerDataWriter.DeleteAsync(UserNoSql.GeneratePartitionKey(userEntity.TenantId),
                     UserNoSql.GenerateRowKey(userEntity.EmailEncrypted));
@@ -237,13 +237,17 @@ namespace MarketingBox.Auth.Service.Services
                         x.TenantId == request.TenantId &&
                         x.ExternalUserId == request.ExternalUserId).DeleteFromQueryAsync();
 
-                return new Response<User>();
+                return new Response<bool>
+                {
+                    Status = ResponseStatus.Ok,
+                    Data = true
+                };
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error during user get. {@context}", request);
 
-                return e.FailedResponse<User>();
+                return e.FailedResponse<bool>();
             }
         }
 

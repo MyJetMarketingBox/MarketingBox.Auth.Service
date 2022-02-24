@@ -21,6 +21,6 @@ namespace MarketingBox.Auth.Service.Grpc
         Task<Response<IReadOnlyCollection<User>>> GetAsync(GetUserRequest request);
         
         [OperationContract]
-        Task<Response<User>> DeleteAsync(DeleteUserRequest request);
+        Task<Response<bool>> DeleteAsync(DeleteUserRequest request);
     }
 }
