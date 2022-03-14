@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MarketingBox.Auth.Service.Domain.Models\MarketingBox.Auth.Service.Domain.Models.csproj" />
     <ProjectReference Include="..\MarketingBox.Auth.Service.Domain\MarketingBox.Auth.Service.Domain.csproj" />
   </ItemGroup>
 

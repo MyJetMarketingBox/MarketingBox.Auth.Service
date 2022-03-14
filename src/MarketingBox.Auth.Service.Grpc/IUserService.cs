@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using Destructurama.Attributed;
+using MarketingBox.Auth.Service.Domain.Models;
 using MarketingBox.Auth.Service.Grpc.Models;
-using MarketingBox.Auth.Service.Grpc.Models.Users;
-using MarketingBox.Auth.Service.Grpc.Models.Users.Requests;
 using MarketingBox.Sdk.Common.Models.Grpc;
 
 namespace MarketingBox.Auth.Service.Grpc
@@ -12,10 +12,10 @@ namespace MarketingBox.Auth.Service.Grpc
     public interface IUserService
     {
         [OperationContract]
-        Task<Response<User>> CreateAsync(CreateUserRequest request);
+        Task<Response<User>> CreateAsync(UpsertUserRequest request);
         
         [OperationContract]
-        Task<Response<User>> UpdateAsync(UpdateUserRequest request);
+        Task<Response<User>> UpdateAsync(UpsertUserRequest request);
         
         [OperationContract]
         Task<Response<IReadOnlyCollection<User>>> GetAsync(GetUserRequest request);
