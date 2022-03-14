@@ -34,7 +34,6 @@
     <ProjectReference Include="..\MarketingBox.Auth.Service.Crypto\MarketingBox.Auth.Service.Crypto.csproj" />
     <ProjectReference Include="..\MarketingBox.Auth.Service.Domain\MarketingBox.Auth.Service.Domain.csproj" />
     <ProjectReference Include="..\MarketingBox.Auth.Service.Grpc\MarketingBox.Auth.Service.Grpc.csproj" />
-    <ProjectReference Include="..\MarketingBox.Auth.Service.Messages\MarketingBox.Auth.Service.Messages.csproj" />
     <ProjectReference Include="..\MarketingBox.Auth.Service.MyNoSql\MarketingBox.Auth.Service.MyNoSql.csproj" />
     <ProjectReference Include="..\MarketingBox.Auth.Service.Postgres\MarketingBox.Auth.Service.Postgres.csproj" />
   </ItemGroup>
