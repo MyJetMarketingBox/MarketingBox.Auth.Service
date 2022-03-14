@@ -12,7 +12,6 @@ namespace MarketingBox.Auth.Service.MyNoSql.Users
 
         public User User { get; set; }
         
-
         public static UserNoSql Create(User user) =>
             new()
             {
