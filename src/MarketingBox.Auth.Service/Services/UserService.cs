@@ -120,7 +120,7 @@ namespace MarketingBox.Auth.Service.Services
                     Username = request.Username
                 };
 
-                ctx.Users.Upsert(userEntity);
+                await ctx.Users.Upsert(userEntity).RunAsync();
                 await ctx.SaveChangesAsync();
 
                 await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
