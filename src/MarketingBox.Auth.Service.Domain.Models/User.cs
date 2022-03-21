@@ -5,8 +5,6 @@ namespace MarketingBox.Auth.Service.Domain.Models
     [DataContract]
     public class User
     {
-        public long Id { get; set; }
-        
         [DataMember(Order = 1)]
         public string TenantId { get; set; }
 

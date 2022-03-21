@@ -17,7 +17,7 @@ namespace MarketingBox.Auth.Service.Postgres.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("auth-service")
-                .HasAnnotation("ProductVersion", "6.0.2")
+                .HasAnnotation("ProductVersion", "6.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -32,11 +32,6 @@ namespace MarketingBox.Auth.Service.Postgres.Migrations
 
                     b.Property<string>("EmailEncrypted")
                         .HasColumnType("text");
-
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");

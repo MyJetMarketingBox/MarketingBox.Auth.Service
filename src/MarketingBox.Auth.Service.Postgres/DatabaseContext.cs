@@ -38,9 +38,6 @@ namespace MarketingBox.Auth.Service.Postgres
         {
             modelBuilder.Entity<User>().ToTable(UserTableName);
             
-            modelBuilder.Entity<User>().Property(e => e.Id).UseIdentityColumn();
-            modelBuilder.Entity<User>().HasKey(e => e.Id);
-            
             modelBuilder.Entity<User>()
                 .HasKey(e => new {e.TenantId, Email = e.ExternalUserId });
             modelBuilder.Entity<User>()

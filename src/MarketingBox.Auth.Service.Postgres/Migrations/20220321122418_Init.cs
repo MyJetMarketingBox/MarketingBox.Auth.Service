@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -19,8 +18,6 @@ namespace MarketingBox.Auth.Service.Postgres.Migrations
                 {
                     TenantId = table.Column<string>(type: "text", nullable: false),
                     ExternalUserId = table.Column<string>(type: "text", nullable: false),
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     EmailEncrypted = table.Column<string>(type: "text", nullable: true),
                     Username = table.Column<string>(type: "text", nullable: true),
                     Salt = table.Column<string>(type: "text", nullable: true),
