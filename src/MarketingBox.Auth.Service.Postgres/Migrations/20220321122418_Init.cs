@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace MarketingBox.Auth.Service.Postgre.Migrations
+#nullable disable
+
+namespace MarketingBox.Auth.Service.Postgres.Migrations
 {
     public partial class Init : Migration
     {
@@ -10,32 +12,41 @@ namespace MarketingBox.Auth.Service.Postgre.Migrations
                 name: "auth-service");
 
             migrationBuilder.CreateTable(
-                name: "users",
+                name: "user",
                 schema: "auth-service",
                 columns: table => new
                 {
                     TenantId = table.Column<string>(type: "text", nullable: false),
-                    EmailEncrypted = table.Column<string>(type: "text", nullable: false),
+                    ExternalUserId = table.Column<string>(type: "text", nullable: false),
+                    EmailEncrypted = table.Column<string>(type: "text", nullable: true),
                     Username = table.Column<string>(type: "text", nullable: true),
                     Salt = table.Column<string>(type: "text", nullable: true),
                     PasswordHash = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_users", x => new { x.TenantId, x.EmailEncrypted });
+                    table.PrimaryKey("PK_user", x => new { x.TenantId, x.ExternalUserId });
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_users_TenantId_Username",
+                name: "IX_user_TenantId_EmailEncrypted",
                 schema: "auth-service",
-                table: "users",
-                columns: new[] { "TenantId", "Username" });
+                table: "user",
+                columns: new[] { "TenantId", "EmailEncrypted" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_TenantId_Username",
+                schema: "auth-service",
+                table: "user",
+                columns: new[] { "TenantId", "Username" },
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "users",
+                name: "user",
                 schema: "auth-service");
         }
     }

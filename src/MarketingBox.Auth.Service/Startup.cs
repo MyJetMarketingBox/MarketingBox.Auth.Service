@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using MarketingBox.Auth.Service.Grpc;
 using MarketingBox.Auth.Service.Modules;
-using MarketingBox.Auth.Service.Postgre;
+using MarketingBox.Auth.Service.Postgres;
 using MarketingBox.Auth.Service.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

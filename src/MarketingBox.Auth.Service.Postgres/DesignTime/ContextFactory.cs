@@ -1,6 +1,6 @@
 ﻿using MyJetWallet.Sdk.Postgres;
 
-namespace MarketingBox.Auth.Service.Postgre.DesignTime
+namespace MarketingBox.Auth.Service.Postgres.DesignTime
 {
     public class ContextFactory : MyDesignTimeContextFactory<DatabaseContext>
     {

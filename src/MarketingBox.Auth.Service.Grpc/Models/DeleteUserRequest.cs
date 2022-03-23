@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace MarketingBox.Auth.Service.Grpc.Models.Users.Requests
+namespace MarketingBox.Auth.Service.Grpc.Models
 {
     [DataContract]
     public class DeleteUserRequest
