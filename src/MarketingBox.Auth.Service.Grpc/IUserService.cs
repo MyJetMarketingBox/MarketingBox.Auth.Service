@@ -18,7 +18,10 @@ namespace MarketingBox.Auth.Service.Grpc
         Task<Response<User>> UpdateAsync(UpsertUserRequest request);
         
         [OperationContract]
-        Task<Response<IReadOnlyCollection<User>>> GetAsync(GetUserRequest request);
+        Task<Response<IReadOnlyCollection<User>>> SearchAsync(SearchUserRequest request);
+        
+        [OperationContract]
+        Task<Response<User>> GetAsync(GetUserRequest request);
         
         [OperationContract]
         Task<Response<bool>> DeleteAsync(DeleteUserRequest request);

@@ -16,7 +16,6 @@ using MarketingBox.Sdk.Common.Exceptions;
 using MarketingBox.Sdk.Common.Extensions;
 using MarketingBox.Sdk.Common.Models;
 using MarketingBox.Sdk.Common.Models.Grpc;
-using Newtonsoft.Json;
 using Npgsql;
 
 namespace MarketingBox.Auth.Service.Services
@@ -33,7 +32,7 @@ namespace MarketingBox.Auth.Service.Services
             DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder,
             IMyNoSqlServerDataWriter<UserNoSql> myNoSqlServerDataWriter,
             ICryptoService cryptoService,
-            Settings.SettingsModel settingsModel)
+            SettingsModel settingsModel)
         {
             _logger = logger;
             _dbContextOptionsBuilder = dbContextOptionsBuilder;
@@ -46,7 +45,7 @@ namespace MarketingBox.Auth.Service.Services
         {
             try
             {
-                _logger.LogInformation("Creating new User {requestJson}", JsonConvert.SerializeObject(request));
+                _logger.LogInformation("Creating new User {@Request}", request);
                 await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
 
                 var encryptedEmail = _cryptoService.Encrypt(
@@ -78,7 +77,7 @@ namespace MarketingBox.Auth.Service.Services
                 when (exception.InnerException is PostgresException pgException &&
                       pgException.SqlState == PostgresErrorCodes.UniqueViolation)
             {
-                _logger.LogError(exception, "Error during user creation. {requestJson}", JsonConvert.SerializeObject(request));
+                _logger.LogError(exception, "Error during user creation. {@Request}", request);
                 return new Response<User>
                 {
                     Status = ResponseStatus.BadRequest,
@@ -90,7 +89,7 @@ namespace MarketingBox.Auth.Service.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error during user creation. {requestJson}", JsonConvert.SerializeObject(request));
+                _logger.LogError(e, "Error during user creation. {@Request}", request);
                 return e.FailedResponse<User>();
             }
         }
@@ -99,7 +98,7 @@ namespace MarketingBox.Auth.Service.Services
         {
             try
             {
-                _logger.LogInformation("Updating User {requestJson}", JsonConvert.SerializeObject(request));
+                _logger.LogInformation("Updating User {@Request}", request);
                 await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
 
                 var encryptedEmail = _cryptoService.Encrypt(
@@ -121,18 +120,18 @@ namespace MarketingBox.Auth.Service.Services
                 };
 
                 await ctx.Users.Upsert(userEntity).RunAsync();
-                await ctx.SaveChangesAsync();
+                
                 await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
                 return MapToResponse(userEntity);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error during user update. {requestJson}", JsonConvert.SerializeObject(request));
+                _logger.LogError(e, "Error during user update. {@Request}", request);
                 return e.FailedResponse<User>();
             }
         }
 
-        public async Task<Response<IReadOnlyCollection<User>>> GetAsync(GetUserRequest request)
+        public async Task<Response<IReadOnlyCollection<User>>> SearchAsync(SearchUserRequest request)
         {
             try
             {
@@ -142,7 +141,7 @@ namespace MarketingBox.Auth.Service.Services
 
                 if (!string.IsNullOrEmpty(request.TenantId))
                 {
-                    query = query.Where(x => x.TenantId == request.TenantId);
+                    query = query.Where(x => x.TenantId.Equals(request.TenantId));
                 }
 
                 if (!string.IsNullOrEmpty(request.Email))
@@ -152,27 +151,53 @@ namespace MarketingBox.Auth.Service.Services
                         _settingsModel.EncryptionSalt,
                         _settingsModel.EncryptionSecret);
 
-                    query = query.Where(x => x.EmailEncrypted == encryptedEmail);
+                    query = query.Where(x => x.EmailEncrypted.ToLower().Contains(encryptedEmail.ToLowerInvariant()));
                 }
 
                 if (!string.IsNullOrEmpty(request.Username))
                 {
-                    query = query.Where(x => x.Username == request.Username);
+                    query = query.Where(x => x.Username.ToLower().Contains(request.Username.ToLowerInvariant()));
                 }
 
                 if (!string.IsNullOrEmpty(request.ExternalUserId))
                 {
-                    query = query.Where(x => x.ExternalUserId == request.ExternalUserId);
+                    query = query.Where(x => x.ExternalUserId.Equals(request.ExternalUserId));
                 }
 
-                var userEntity = await query.ToArrayAsync();
-
-                if (userEntity.Length == 0)
-                {
-                    throw new NotFoundException(NotFoundException.DefaultMessage);
-                }
-
+                var userEntities = await query.ToArrayAsync();
+                var total = userEntities.Length;
+                
                 return new Response<IReadOnlyCollection<User>>
+                {
+                    Status = ResponseStatus.Ok,
+                    Data = userEntities,
+                    Total = total
+                };
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error during user search. {@Request}", request);
+
+                return e.FailedResponse<IReadOnlyCollection<User>>();
+            }
+        }
+
+        public async Task<Response<User>> GetAsync(GetUserRequest request)
+        {
+            try
+            {
+                await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
+
+                var userEntity = await ctx.Users.FirstOrDefaultAsync(x =>
+                    x.TenantId == request.TenantId &&
+                    x.ExternalUserId == request.ExternalUserId);
+
+                if (userEntity == null)
+                    throw new NotFoundException(nameof(request.ExternalUserId),request.ExternalUserId);
+
+                await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
+                
+                return new Response<User>
                 {
                     Status = ResponseStatus.Ok,
                     Data = userEntity
@@ -180,9 +205,9 @@ namespace MarketingBox.Auth.Service.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error during user get. {requestJson}", JsonConvert.SerializeObject(request));
+                _logger.LogError(e, "Error during user get. {@Request}", request);
 
-                return e.FailedResponse<IReadOnlyCollection<User>>();
+                return e.FailedResponse<User>();
             }
         }
 
@@ -215,7 +240,7 @@ namespace MarketingBox.Auth.Service.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error during user get. {requestJson}", JsonConvert.SerializeObject(request));
+                _logger.LogError(e, "Error during user delete. {@Request}", request);
 
                 return e.FailedResponse<bool>();
             }
