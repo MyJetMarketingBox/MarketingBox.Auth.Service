@@ -70,7 +70,7 @@ namespace MarketingBox.Auth.Service.Services
                 ctx.Users.Add(userEntity);
                 await ctx.SaveChangesAsync();
 
-                //await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
+                await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
 
                 return MapToResponse(userEntity);
             }
@@ -122,8 +122,7 @@ namespace MarketingBox.Auth.Service.Services
 
                 await ctx.Users.Upsert(userEntity).RunAsync();
                 await ctx.SaveChangesAsync();
-
-                // await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
+                await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
                 return MapToResponse(userEntity);
             }
             catch (Exception e)
@@ -200,8 +199,8 @@ namespace MarketingBox.Auth.Service.Services
                 if (userEntity == null)
                     throw new NotFoundException(nameof(request.ExternalUserId),request.ExternalUserId);
 
-                // await _myNoSqlServerDataWriter.DeleteAsync(UserNoSql.GeneratePartitionKey(userEntity.TenantId),
-                    // UserNoSql.GenerateRowKey(userEntity.EmailEncrypted));
+                await _myNoSqlServerDataWriter.DeleteAsync(UserNoSql.GeneratePartitionKey(userEntity.TenantId),
+                    UserNoSql.GenerateRowKey(userEntity.EmailEncrypted));
 
                 await ctx.Users
                     .Where(x =>
