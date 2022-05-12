@@ -151,12 +151,12 @@ namespace MarketingBox.Auth.Service.Services
                         _settingsModel.EncryptionSalt,
                         _settingsModel.EncryptionSecret);
 
-                    query = query.Where(x => x.EmailEncrypted.ToLower().Contains(encryptedEmail.ToLowerInvariant()));
+                    query = query.Where(x => x.EmailEncrypted.Equals(encryptedEmail));
                 }
 
                 if (!string.IsNullOrEmpty(request.Username))
                 {
-                    query = query.Where(x => x.Username.ToLower().Contains(request.Username.ToLowerInvariant()));
+                    query = query.Where(x => x.Username.Equals(request.Username));
                 }
 
                 if (!string.IsNullOrEmpty(request.ExternalUserId))
