@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MarketingBox.Auth.Service.Client\MarketingBox.Auth.Service.Client.csproj" />
-    <ProjectReference Include="..\..\src\MarketingBox.Auth.Service.Crypto\MarketingBox.Auth.Service.Crypto.csproj" />
     <ProjectReference Include="..\..\src\MarketingBox.Auth.Service.Grpc\MarketingBox.Auth.Service.Grpc.csproj" />
   </ItemGroup>
 

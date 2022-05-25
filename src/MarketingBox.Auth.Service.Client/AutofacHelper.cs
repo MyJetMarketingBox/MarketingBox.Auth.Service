@@ -1,8 +1,8 @@
 ﻿using Autofac;
 using MarketingBox.Auth.Service.Client.Interfaces;
-using MarketingBox.Auth.Service.Crypto;
 using MarketingBox.Auth.Service.Grpc;
 using MarketingBox.Auth.Service.MyNoSql.Users;
+using MarketingBox.Sdk.Crypto;
 using MyJetWallet.Sdk.NoSql;
 using MyNoSqlServer.DataReader;
 

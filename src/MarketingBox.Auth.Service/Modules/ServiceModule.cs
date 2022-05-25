@@ -1,6 +1,7 @@
 ﻿using Autofac;
-using MarketingBox.Auth.Service.Crypto;
+using MarketingBox.Auth.Service.Messages;
 using MarketingBox.Auth.Service.MyNoSql.Users;
+using MarketingBox.Sdk.Crypto;
 using MyJetWallet.Sdk.NoSql;
 using MyJetWallet.Sdk.ServiceBus;
 
@@ -14,6 +15,10 @@ namespace MarketingBox.Auth.Service.Modules
                 .RegisterMyServiceBusTcpClient(
                     Program.ReloadedSettings(e => e.MarketingBoxServiceBusHostPort),
                     Program.LogFactory);
+            builder.RegisterMyServiceBusPublisher<UserPasswordChangedMessage>(
+                serviceBusClient,
+                UserPasswordChangedMessage.Topic,
+                false);
 
             builder.Register(x => new CryptoService())
                 .As<ICryptoService>()

@@ -16,6 +16,8 @@ namespace MarketingBox.Auth.Service.Grpc
         
         [OperationContract]
         Task<Response<User>> UpdateAsync(UpsertUserRequest request);
+        [OperationContract]
+        Task<Response<User>> ChangePasswordAsync(ChangePasswordRequest request);
         
         [OperationContract]
         Task<Response<IReadOnlyCollection<User>>> SearchAsync(SearchUserRequest request);
