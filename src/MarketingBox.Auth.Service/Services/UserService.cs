@@ -152,7 +152,8 @@ namespace MarketingBox.Auth.Service.Services
                     Email = _cryptoService.Decrypt(
                         userEntity.EmailEncrypted,
                         _settingsModel.EncryptionSalt,
-                        _settingsModel.EncryptionSecret)
+                        _settingsModel.EncryptionSecret),
+                    UserName = userEntity.Username
                 };
                 await _publisherPasswordChanged.PublishAsync(message);
 
