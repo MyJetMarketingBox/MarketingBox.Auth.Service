@@ -145,6 +145,15 @@ namespace MarketingBox.Auth.Service.Services
                 userEntity.PasswordHash = _cryptoService.HashPassword(salt, request.NewPassword);
                 userEntity.Salt = salt;
 
+                ctx.UserLogs.Add(new UserLog
+                {
+                    ChangeType = ChangeType.PasswordChanged,
+                    ModifiedAt = DateTime.UtcNow,
+                    TenantId = request.TenantId,
+                    ModifiedByUserId = request.ChangedByUserId,
+                    ModifiedForUserId = request.UserId
+                });
+                
                 await ctx.SaveChangesAsync();
 
                 var message = new UserPasswordChangedMessage
@@ -155,10 +164,11 @@ namespace MarketingBox.Auth.Service.Services
                         _settingsModel.EncryptionSecret),
                     UserName = userEntity.Username
                 };
+                
                 await _publisherPasswordChanged.PublishAsync(message);
 
                 await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
-
+                
                 return new Response<User>
                 {
                     Status = ResponseStatus.Ok,
