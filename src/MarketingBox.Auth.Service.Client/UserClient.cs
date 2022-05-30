@@ -27,7 +27,7 @@ public class UserClient : IUserClient
         _logger = logger;
     }
 
-    public async Task<User> GetUser(long userId, string tenantId, bool checkInService = false)
+    public async ValueTask<User> GetUser(long userId, string tenantId, bool checkInService = false)
     {
         try
         {
@@ -64,12 +64,14 @@ public class UserClient : IUserClient
         }
     }
 
-    public User GetUser(string tenantId, string emailEncrypted)
+    public User GetUser(string emailEncrypted, string tenantId = null)
     {
         try
         {
             _logger.LogInformation("Getting user from nosql server.");
-            var user = _noSqlReader.Get(tenantId, emailEncrypted)?.User;
+            var user = !string.IsNullOrEmpty(tenantId) 
+                ? _noSqlReader.Get(tenantId, emailEncrypted)?.User
+                : _noSqlReader.Get(x => x.RowKey == emailEncrypted).FirstOrDefault()?.User;
 
             if (user != null)
             {
