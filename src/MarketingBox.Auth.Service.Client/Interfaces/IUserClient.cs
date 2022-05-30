@@ -5,6 +5,6 @@ namespace MarketingBox.Auth.Service.Client.Interfaces;
 
 public interface IUserClient
 {
-    Task<User> GetUser(long userId, string tenantId, bool checkInService = false);
-    User GetUser(string tenantId, string emailEncrypted);
+    ValueTask<User> GetUser(long userId, string tenantId, bool checkInService = false);
+    User GetUser(string emailEncrypted, string tenantId = null);
 }
