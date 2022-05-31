@@ -1,5 +1,4 @@
-﻿using MyJetWallet.Sdk.Service;
-using MyYamlParser;
+﻿using MyYamlParser;
 
 namespace MarketingBox.Auth.Service.Settings
 {

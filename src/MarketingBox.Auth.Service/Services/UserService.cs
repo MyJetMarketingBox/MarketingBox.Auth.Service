@@ -1,48 +1,52 @@
 ﻿using MarketingBox.Auth.Service.Grpc;
-using MarketingBox.Auth.Service.Postgres;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyNoSqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MarketingBox.Auth.Service.Domain.Models;
 using MarketingBox.Auth.Service.Grpc.Models;
 using MarketingBox.Auth.Service.Messages;
 using MarketingBox.Auth.Service.MyNoSql.Users;
-using MarketingBox.Auth.Service.Settings;
-using MarketingBox.Sdk.Common.Exceptions;
+using MarketingBox.Auth.Service.Repositories.Interfaces;
+using MarketingBox.Auth.Service.Services.Interfaces;
 using MarketingBox.Sdk.Common.Extensions;
 using MarketingBox.Sdk.Common.Models.Grpc;
-using MarketingBox.Sdk.Crypto;
 using MyJetWallet.Sdk.ServiceBus;
-using Npgsql;
 
 namespace MarketingBox.Auth.Service.Services
 {
     public class UserService : IUserService
     {
         private readonly ILogger<UserService> _logger;
-        private readonly DbContextOptionsBuilder<DatabaseContext> _dbContextOptionsBuilder;
+        private readonly IUserRepository _userRepository;
+        private readonly ICryptoHelper _cryptoHelper;
         private readonly IMyNoSqlServerDataWriter<UserNoSql> _myNoSqlServerDataWriter;
-        private readonly ICryptoService _cryptoService;
-        private readonly SettingsModel _settingsModel;
         private readonly IServiceBusPublisher<UserPasswordChangedMessage> _publisherPasswordChanged;
+        
+        private async Task PublishChangedPassword(User user)
+        {
+            var message = new UserPasswordChangedMessage
+            {
+                Email = _cryptoHelper.DecryptEmail(user.EmailEncrypted),
+                UserName = user.Username
+            };
 
+            await _publisherPasswordChanged.PublishAsync(message);
+
+            await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(user));
+        }
+        
         public UserService(ILogger<UserService> logger,
-            DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder,
             IMyNoSqlServerDataWriter<UserNoSql> myNoSqlServerDataWriter,
-            ICryptoService cryptoService,
-            SettingsModel settingsModel,
-            IServiceBusPublisher<UserPasswordChangedMessage> publisherPasswordChanged)
+            IServiceBusPublisher<UserPasswordChangedMessage> publisherPasswordChanged, 
+            IUserRepository userRepository, ICryptoHelper cryptoHelper)
         {
             _logger = logger;
-            _dbContextOptionsBuilder = dbContextOptionsBuilder;
             _myNoSqlServerDataWriter = myNoSqlServerDataWriter;
-            _cryptoService = cryptoService;
-            _settingsModel = settingsModel;
             _publisherPasswordChanged = publisherPasswordChanged;
+            _userRepository = userRepository;
+            _cryptoHelper = cryptoHelper;
         }
 
         public async Task<Response<User>> CreateAsync(UpsertUserRequest request)
@@ -50,40 +54,9 @@ namespace MarketingBox.Auth.Service.Services
             try
             {
                 _logger.LogInformation("Creating new User {@Request}", request);
-                await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
-
-                var encryptedEmail = _cryptoService.Encrypt(
-                    request.Email,
-                    _settingsModel.EncryptionSalt,
-                    _settingsModel.EncryptionSecret);
-
-                var salt = _cryptoService.GenerateSalt();
-                var passwordHash = _cryptoService.HashPassword(salt, request.Password);
-
-                var userEntity = new User()
-                {
-                    ExternalUserId = request.ExternalUserId,
-                    EmailEncrypted = encryptedEmail,
-                    PasswordHash = passwordHash,
-                    Salt = salt,
-                    TenantId = request.TenantId,
-                    Username = request.Username
-                };
-
-                ctx.Users.Add(userEntity);
-                try
-                {
-                    await ctx.SaveChangesAsync();
-                }
-                catch (DbUpdateException exception)
-                    when (exception.InnerException is PostgresException pgException &&
-                          pgException.SqlState == PostgresErrorCodes.UniqueViolation)
-                {
-                    throw new BadRequestException("User already exists.");
-                }
-
-                await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
-                return MapToResponse(userEntity);
+                var user = await _userRepository.CreateAsync(request);
+                await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(user));
+                return MapToResponse(user);
             }
             catch (Exception e)
             {
@@ -97,28 +70,9 @@ namespace MarketingBox.Auth.Service.Services
             try
             {
                 _logger.LogInformation("Updating User {@Request}", request);
-                await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
 
-                var encryptedEmail = _cryptoService.Encrypt(
-                    request.Email,
-                    _settingsModel.EncryptionSalt,
-                    _settingsModel.EncryptionSecret);
-
-                var salt = _cryptoService.GenerateSalt();
-                var passwordHash = _cryptoService.HashPassword(salt, request.Password);
-
-                var userEntity = new User()
-                {
-                    ExternalUserId = request.ExternalUserId,
-                    EmailEncrypted = encryptedEmail,
-                    PasswordHash = passwordHash,
-                    Salt = salt,
-                    TenantId = request.TenantId,
-                    Username = request.Username
-                };
-
-                await ctx.Users.Upsert(userEntity).RunAsync();
-
+                var userEntity = await _userRepository.UpdateAsync(request);
+                
                 await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
                 return MapToResponse(userEntity);
             }
@@ -133,47 +87,28 @@ namespace MarketingBox.Auth.Service.Services
         {
             try
             {
-                await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
-                var userEntity = await ctx.Users.FirstOrDefaultAsync(x =>
-                    x.TenantId == request.TenantId &&
-                    x.ExternalUserId == request.UserId.ToString());
+                var user = await _userRepository.ChangePasswordAsync(request);
 
-                if (userEntity == null)
-                    throw new NotFoundException(nameof(request.UserId), request.UserId);
+                await PublishChangedPassword(user);
 
-                var salt = _cryptoService.GenerateSalt();
-                userEntity.PasswordHash = _cryptoService.HashPassword(salt, request.NewPassword);
-                userEntity.Salt = salt;
+                return MapToResponse(user);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error during change password. {@Request}", request);
+                return e.FailedResponse<User>();
+            }
+        }
 
-                ctx.UserLogs.Add(new UserLog
-                {
-                    ChangeType = ChangeType.PasswordChanged,
-                    ModifiedAt = DateTime.UtcNow,
-                    TenantId = request.TenantId,
-                    ModifiedByUserId = request.ChangedByUserId,
-                    ModifiedForUserId = request.UserId
-                });
-                
-                await ctx.SaveChangesAsync();
+        public async Task<Response<User>> ForceChangePasswordAsync(ForceChangePasswordRequest request)
+        {
+            try
+            {
+                var user = await _userRepository.ForceChangePasswordAsync(request);
 
-                var message = new UserPasswordChangedMessage
-                {
-                    Email = _cryptoService.Decrypt(
-                        userEntity.EmailEncrypted,
-                        _settingsModel.EncryptionSalt,
-                        _settingsModel.EncryptionSecret),
-                    UserName = userEntity.Username
-                };
-                
-                await _publisherPasswordChanged.PublishAsync(message);
+                await PublishChangedPassword(user);
 
-                await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
-                
-                return new Response<User>
-                {
-                    Status = ResponseStatus.Ok,
-                    Data = userEntity
-                };
+                return MapToResponse(user);
             }
             catch (Exception e)
             {
@@ -186,37 +121,7 @@ namespace MarketingBox.Auth.Service.Services
         {
             try
             {
-                await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
-
-                var query = ctx.Users.AsQueryable();
-
-                if (!string.IsNullOrEmpty(request.TenantId))
-                {
-                    query = query.Where(x => x.TenantId.Equals(request.TenantId));
-                }
-
-                if (!string.IsNullOrEmpty(request.Email))
-                {
-                    var encryptedEmail = _cryptoService.Encrypt(
-                        request.Email,
-                        _settingsModel.EncryptionSalt,
-                        _settingsModel.EncryptionSecret);
-
-                    query = query.Where(x => x.EmailEncrypted.Equals(encryptedEmail));
-                }
-
-                if (!string.IsNullOrEmpty(request.Username))
-                {
-                    query = query.Where(x => x.Username.Equals(request.Username));
-                }
-
-                if (!string.IsNullOrEmpty(request.ExternalUserId))
-                {
-                    query = query.Where(x => x.ExternalUserId.Equals(request.ExternalUserId));
-                }
-
-                var userEntities = await query.ToArrayAsync();
-                var total = userEntities.Length;
+                var (userEntities, total) = await _userRepository.SearchAsync(request);
 
                 return new Response<IReadOnlyCollection<User>>
                 {
@@ -237,22 +142,11 @@ namespace MarketingBox.Auth.Service.Services
         {
             try
             {
-                await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
+                var user = await _userRepository.GetAsync(request);
+                
+                await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(user));
 
-                var userEntity = await ctx.Users.FirstOrDefaultAsync(x =>
-                    x.TenantId == request.TenantId &&
-                    x.ExternalUserId == request.ExternalUserId);
-
-                if (userEntity == null)
-                    throw new NotFoundException(nameof(request.ExternalUserId), request.ExternalUserId);
-
-                await _myNoSqlServerDataWriter.InsertOrReplaceAsync(UserNoSql.Create(userEntity));
-
-                return new Response<User>
-                {
-                    Status = ResponseStatus.Ok,
-                    Data = userEntity
-                };
+                return MapToResponse(user);
             }
             catch (Exception e)
             {
@@ -266,23 +160,9 @@ namespace MarketingBox.Auth.Service.Services
         {
             try
             {
-                await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
-
-                var userEntity = await ctx.Users.FirstOrDefaultAsync(x =>
-                    x.TenantId == request.TenantId &&
-                    x.ExternalUserId == request.ExternalUserId);
-
-                if (userEntity == null)
-                    throw new NotFoundException(nameof(request.ExternalUserId), request.ExternalUserId);
-
-                await _myNoSqlServerDataWriter.DeleteAsync(UserNoSql.GeneratePartitionKey(userEntity.TenantId),
-                    UserNoSql.GenerateRowKey(userEntity.EmailEncrypted));
-
-                await ctx.Users
-                    .Where(x =>
-                        x.TenantId == request.TenantId &&
-                        x.ExternalUserId == request.ExternalUserId).DeleteFromQueryAsync();
-
+                var userRemoved = await _userRepository.DeleteAsync(request);
+                await _myNoSqlServerDataWriter.DeleteAsync(UserNoSql.GeneratePartitionKey(userRemoved.TenantId),
+                    UserNoSql.GenerateRowKey(userRemoved.EmailEncrypted));
                 return new Response<bool>
                 {
                     Status = ResponseStatus.Ok,

@@ -17,7 +17,6 @@ namespace MarketingBox.Auth.Service.Client
             var factory = new AuthServiceClientFactory(grpcServiceUrl);
 
             builder.RegisterInstance(factory.GetUserService()).As<IUserService>().SingleInstance();
-            builder.RegisterInstance(new CryptoService()).As<ICryptoService>().SingleInstance();
         }
         
         public static void RegisterUserClient(
@@ -28,9 +27,9 @@ namespace MarketingBox.Auth.Service.Client
             var factory = new AuthServiceClientFactory(grpcServiceUrl);
 
             builder.RegisterInstance(factory.GetUserService()).As<IUserService>().SingleInstance();
-            builder.RegisterInstance(new CryptoService()).As<ICryptoService>().SingleInstance();
-            
+            builder.RegisterType<CryptoService>().As<ICryptoService>().SingleInstance();
             builder.RegisterType<UserClient>().As<IUserClient>().SingleInstance();
+            
             builder.RegisterMyNoSqlReader<UserNoSql>(noSqlClient, UserNoSql.TableName);
         }
     }
