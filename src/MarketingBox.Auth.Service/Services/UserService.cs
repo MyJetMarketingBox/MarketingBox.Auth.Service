@@ -49,7 +49,7 @@ namespace MarketingBox.Auth.Service.Services
             _cryptoHelper = cryptoHelper;
         }
 
-        public async Task<Response<User>> CreateAsync(UpsertUserRequest request)
+        public async Task<Response<User>> CreateAsync(CreateUserRequest request)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace MarketingBox.Auth.Service.Services
             }
         }
 
-        public async Task<Response<User>> UpdateAsync(UpsertUserRequest request)
+        public async Task<Response<User>> UpdateAsync(UpdateUserRequest request)
         {
             try
             {
@@ -161,7 +161,8 @@ namespace MarketingBox.Auth.Service.Services
             try
             {
                 var userRemoved = await _userRepository.DeleteAsync(request);
-                await _myNoSqlServerDataWriter.DeleteAsync(UserNoSql.GeneratePartitionKey(userRemoved.TenantId),
+                await _myNoSqlServerDataWriter.DeleteAsync(
+                    UserNoSql.GeneratePartitionKey(userRemoved.TenantId),
                     UserNoSql.GenerateRowKey(userRemoved.EmailEncrypted));
                 return new Response<bool>
                 {

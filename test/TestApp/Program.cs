@@ -18,7 +18,7 @@ namespace TestApp
             var factory = new AuthServiceClientFactory("http://localhost:12347");
             var client = factory.GetUserService();
             
-            await  client.CreateAsync(new UpsertUserRequest()
+            await  client.CreateAsync(new CreateUserRequest()
             {
                 ExternalUserId = "Supervisor",
                 Email = "supervisor@gmail.com",

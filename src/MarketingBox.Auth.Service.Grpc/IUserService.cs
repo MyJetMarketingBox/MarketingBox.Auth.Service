@@ -11,10 +11,10 @@ namespace MarketingBox.Auth.Service.Grpc
     public interface IUserService
     {
         [OperationContract]
-        Task<Response<User>> CreateAsync(UpsertUserRequest request);
+        Task<Response<User>> CreateAsync(CreateUserRequest request);
         
         [OperationContract]
-        Task<Response<User>> UpdateAsync(UpsertUserRequest request);
+        Task<Response<User>> UpdateAsync(UpdateUserRequest request);
         
         [OperationContract]
         Task<Response<User>> ChangePasswordAsync(ChangePasswordRequest request);

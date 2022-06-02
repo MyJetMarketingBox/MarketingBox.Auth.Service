@@ -16,7 +16,4 @@ public class ChangePasswordRequest
     
     [DataMember(Order = 4)]
     public long UserId { get; set; }
-    
-    [DataMember(Order = 5)]
-    public long ChangedByUserId { get; set; }
 }

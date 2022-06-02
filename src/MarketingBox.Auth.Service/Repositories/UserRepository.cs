@@ -56,7 +56,7 @@ namespace MarketingBox.Auth.Service.Repositories
             await ctx.SaveChangesAsync();
         }
 
-        public async Task<User> CreateAsync(UpsertUserRequest request)
+        public async Task<User> CreateAsync(CreateUserRequest request)
         {
             await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
 
@@ -85,24 +85,19 @@ namespace MarketingBox.Auth.Service.Repositories
             {
                 throw new BadRequestException("User already exists.");
             }
-
             return userEntity;
         }
 
-        public async Task<User> UpdateAsync(UpsertUserRequest request)
+        public async Task<User> UpdateAsync(UpdateUserRequest request)
         {
             await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
 
             var encryptedEmail = _cryptoHelper.EncryptEmail(request.Email);
 
-            var (salt, passwordHash) = _cryptoHelper.EncryptPassword(request.Password);
-
             var userEntity = new User()
             {
                 ExternalUserId = request.ExternalUserId,
                 EmailEncrypted = encryptedEmail,
-                PasswordHash = passwordHash,
-                Salt = salt,
                 TenantId = request.TenantId,
                 Username = request.Username
             };
@@ -123,7 +118,7 @@ namespace MarketingBox.Auth.Service.Repositories
                 NewPassword = request.NewPassword,
                 TenantId = request.TenantId,
                 UserId = request.UserId,
-                ChangedByUserId = request.ChangedByUserId
+                ChangedByUserId = request.UserId
             }, userEntity, ctx);
 
             return userEntity;

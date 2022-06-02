@@ -7,9 +7,9 @@ namespace MarketingBox.Auth.Service.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        Task<User> CreateAsync(UpsertUserRequest request);
+        Task<User> CreateAsync(CreateUserRequest request);
 
-        Task<User> UpdateAsync(UpsertUserRequest request);
+        Task<User> UpdateAsync(UpdateUserRequest request);
 
         Task<User> ChangePasswordAsync(ChangePasswordRequest request);
         

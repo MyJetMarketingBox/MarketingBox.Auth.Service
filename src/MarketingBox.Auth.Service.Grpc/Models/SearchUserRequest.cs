@@ -18,6 +18,5 @@ namespace MarketingBox.Auth.Service.Grpc.Models
 
         [DataMember(Order = 4)]
         public string ExternalUserId { get; set; }
-
     }
 }
