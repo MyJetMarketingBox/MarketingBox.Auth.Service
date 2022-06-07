@@ -26,11 +26,10 @@ namespace MarketingBox.Auth.Service.Services
 
         public void ValidatePassword(string passwordHash, string salt, string oldPassword)
         {
-            var passwordDecrypted = _cryptoService.Decrypt(
-                passwordHash,
+            var passwordEncrypted = _cryptoService.HashPassword(
                 salt,
-                Program.Settings.EncryptionSecret);
-            if (!passwordDecrypted.Equals(oldPassword))
+                oldPassword);
+            if (!passwordEncrypted.Equals(passwordHash))
             {
                 throw new ForbiddenException("Old password is wrong.");
             }
