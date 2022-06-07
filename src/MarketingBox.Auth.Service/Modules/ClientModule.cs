@@ -25,7 +25,8 @@ namespace MarketingBox.Auth.Service.Modules
                 "MarketingBox-Email-Service-password-reset",
                 TopicQueueType.PermanentWithSingleConnection);
 
-            builder.CreateNoSqlClient(Program.ReloadedSettings(e => e.MyNoSqlReaderHostPort));
+            builder.CreateNoSqlClient(Program.ReloadedSettings(e => e.MyNoSqlReaderHostPort).Invoke(),
+                Program.LogFactory);
 
             // register writer (IMyNoSqlServerDataWriter<PartnerNoSql>)
             builder.RegisterMyNoSqlWriter<UserNoSql>(Program.ReloadedSettings(e => e.MyNoSqlWriterUrl), UserNoSql.TableName);

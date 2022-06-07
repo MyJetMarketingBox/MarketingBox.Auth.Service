@@ -36,7 +36,7 @@ namespace MarketingBox.Auth.Service
 
             Settings = SettingsReader.GetSettings<SettingsModel>(SettingsFileName);
 
-            using var loggerFactory = LogConfigurator.ConfigureElk("MarketingBox.Auth.Service", Settings.SeqServiceUrl);
+            using var loggerFactory = LogConfigurator.ConfigureElk_v2("MarketingBox.Auth.Service", Settings.SeqServiceUrl);
 
             var logger = loggerFactory.CreateLogger<Program>();
 
