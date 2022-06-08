@@ -85,6 +85,7 @@ namespace MarketingBox.Auth.Service.Repositories
             {
                 throw new BadRequestException("User already exists.");
             }
+
             return userEntity;
         }
 
@@ -92,17 +93,15 @@ namespace MarketingBox.Auth.Service.Repositories
         {
             await using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
 
+            var userEntity = await GetUserAsync(request.TenantId, request.ExternalUserId, ctx);
             var encryptedEmail = _cryptoHelper.EncryptEmail(request.Email);
 
-            var userEntity = new User()
-            {
-                ExternalUserId = request.ExternalUserId,
-                EmailEncrypted = encryptedEmail,
-                TenantId = request.TenantId,
-                Username = request.Username
-            };
+            userEntity.ExternalUserId = request.ExternalUserId;
+            userEntity.EmailEncrypted = encryptedEmail;
+            userEntity.TenantId = request.TenantId;
+            userEntity.Username = request.Username;
 
-            await ctx.Users.Upsert(userEntity).RunAsync();
+            await ctx.SaveChangesAsync();
             return userEntity;
         }
 
@@ -180,7 +179,7 @@ namespace MarketingBox.Auth.Service.Repositories
 
             ctx.Users.Remove(userEntity);
             await ctx.SaveChangesAsync();
-            
+
             return userEntity;
         }
     }
