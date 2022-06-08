@@ -102,17 +102,14 @@ jobs:
         NAMESPACE: marketing-box
         IMAGE: ${{ steps.string.outputs.lowercase }}-${{ steps.branch.outputs.branch_name }}
 
-  docker_restart_container:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.TRAFME_UAT_SVC1_HOST }}
-          username: ${{ secrets.VM_USERNAME }}
-          key: ${{ secrets.TRAFFME_SSH_KEY }}
-          port: ${{ secrets.TRAFME_UAT_SVC1_PORT }}
-          script: |
-            cd /home/monfex/docker-infrastructure/services/${{ steps.string.outputs }}
-            docker-compose pull && docker-compose up -d
+    - name: restart docker container uat
+      if: ${{ steps.branch.outputs.branch_name == 'uat' }}
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.TRAFME_UAT_SVC1_HOST }}
+        username: ${{ secrets.VM_USERNAME }}
+        key: ${{ secrets.TRAFFME_SSH_KEY }}
+        port: ${{ secrets.TRAFME_UAT_SVC1_PORT }}
+        script: |
+          cd /home/monfex/docker-infrastructure/services/MarketingBox.Auth.Service
+          docker-compose pull && docker-compose up -d
