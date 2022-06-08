@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using MarketingBox.Auth.Service.Domain.Models;
+using MarketingBox.Auth.Service.Grpc.Models;
 using MarketingBox.Auth.Service.Services.Interfaces;
 using MarketingBox.Auth.Service.Settings;
 using MarketingBox.Sdk.Common.Exceptions;
+using MarketingBox.Sdk.Common.Models;
 using MarketingBox.Sdk.Crypto;
 
 namespace MarketingBox.Auth.Service.Services
@@ -29,10 +32,20 @@ namespace MarketingBox.Auth.Service.Services
             var passwordEncrypted = _cryptoService.HashPassword(
                 salt,
                 oldPassword);
-            if (!passwordEncrypted.Equals(passwordHash))
+            if (passwordEncrypted.Equals(passwordHash)) return;
+            var errorMessage = "Password is wrong";
+            throw new BadRequestException(new Error
             {
-                throw new ForbiddenException("Old password is wrong.");
-            }
+                ErrorMessage = errorMessage,
+                ValidationErrors = new List<ValidationError>
+                {
+                    new()
+                    {
+                        ErrorMessage = errorMessage,
+                        ParameterName = nameof(ChangePasswordRequest.OldPassword)
+                    }
+                }
+            });
         }
 
         public string DecryptEmail(string encryptedEmail)
