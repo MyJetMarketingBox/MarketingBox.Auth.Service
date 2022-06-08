@@ -104,7 +104,7 @@ jobs:
 
   docker_restart_container:
     needs: build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@master
