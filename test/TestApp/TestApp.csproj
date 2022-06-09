@@ -6,13 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.Net.Client" Version="2.45.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.46.0" />
     <PackageReference Include="protobuf-net.Grpc" Version="1.0.152" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MarketingBox.Auth.Service.Client\MarketingBox.Auth.Service.Client.csproj" />
-    <ProjectReference Include="..\..\src\MarketingBox.Auth.Service.Crypto\MarketingBox.Auth.Service.Crypto.csproj" />
     <ProjectReference Include="..\..\src\MarketingBox.Auth.Service.Grpc\MarketingBox.Auth.Service.Grpc.csproj" />
   </ItemGroup>
 

@@ -9,8 +9,10 @@ namespace MarketingBox.Auth.Service.Postgres
         public const string Schema = "auth-service";
 
         private const string UserTableName = "user";
+        private const string UserLogTableName = "user-log";
 
         public DbSet<User> Users { get; set; }
+        public DbSet<UserLog> UserLogs { get; set; }
 
 
         public DatabaseContext(DbContextOptions options) : base(options)
@@ -30,8 +32,15 @@ namespace MarketingBox.Auth.Service.Postgres
             modelBuilder.HasDefaultSchema(Schema);
 
             SetUserEntity(modelBuilder);
+            SetUserLogEntity(modelBuilder);
 
             base.OnModelCreating(modelBuilder);
+        }
+
+        private void SetUserLogEntity(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserLog>().ToTable(UserLogTableName);
+            modelBuilder.Entity<UserLog>().HasKey(x => x.Id);
         }
 
         private void SetUserEntity(ModelBuilder modelBuilder)

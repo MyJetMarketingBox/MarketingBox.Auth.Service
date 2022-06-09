@@ -63,6 +63,7 @@ namespace MarketingBox.Auth.Service
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterModule<SettingsModule>();
+            builder.RegisterModule<ClientModule>();
             builder.RegisterModule<ServiceModule>();
         }
     }
