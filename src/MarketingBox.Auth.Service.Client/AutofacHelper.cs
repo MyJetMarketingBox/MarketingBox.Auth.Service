@@ -16,9 +16,7 @@ namespace MarketingBox.Auth.Service.Client
         public static void RegisterAuthServiceClient(this ContainerBuilder builder, string grpcServiceUrl)
         {
             var factory = new AuthServiceClientFactory(grpcServiceUrl);
-
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
+            
             builder.RegisterInstance(factory.GetUserService()).As<IUserService>().SingleInstance();
         }
 
