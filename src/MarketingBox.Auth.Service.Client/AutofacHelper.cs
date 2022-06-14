@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using MarketingBox.Auth.Service.Client.Interfaces;
 using MarketingBox.Auth.Service.Grpc;
 using MarketingBox.Auth.Service.MyNoSql.Users;
@@ -16,9 +17,11 @@ namespace MarketingBox.Auth.Service.Client
         {
             var factory = new AuthServiceClientFactory(grpcServiceUrl);
 
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             builder.RegisterInstance(factory.GetUserService()).As<IUserService>().SingleInstance();
         }
-        
+
         public static void RegisterUserClient(
             this ContainerBuilder builder,
             string grpcServiceUrl,
@@ -29,7 +32,7 @@ namespace MarketingBox.Auth.Service.Client
             builder.RegisterInstance(factory.GetUserService()).As<IUserService>().SingleInstance();
             builder.RegisterType<CryptoService>().As<ICryptoService>().SingleInstance();
             builder.RegisterType<UserClient>().As<IUserClient>().SingleInstance();
-            
+
             builder.RegisterMyNoSqlReader<UserNoSql>(noSqlClient, UserNoSql.TableName);
         }
     }
