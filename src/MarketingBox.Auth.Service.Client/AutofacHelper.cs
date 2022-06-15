@@ -1,5 +1,4 @@
-﻿using System;
-using Autofac;
+﻿using Autofac;
 using MarketingBox.Auth.Service.Client.Interfaces;
 using MarketingBox.Auth.Service.Grpc;
 using MarketingBox.Auth.Service.MyNoSql.Users;
@@ -18,6 +17,7 @@ namespace MarketingBox.Auth.Service.Client
             var factory = new AuthServiceClientFactory(grpcServiceUrl);
             
             builder.RegisterInstance(factory.GetUserService()).As<IUserService>().SingleInstance();
+            builder.RegisterInstance(factory.GetTokenService()).As<ITokensService>().SingleInstance();
         }
 
         public static void RegisterUserClient(

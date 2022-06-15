@@ -30,7 +30,6 @@ namespace MarketingBox.Auth.Service
                 o => new DatabaseContext(o));
 
             services.AddMyTelemetry("MB-", Program.Settings.JaegerUrl);
-            services.AddGrpc();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -51,6 +50,7 @@ namespace MarketingBox.Auth.Service
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcSchema<UserService, IUserService>();
+                endpoints.MapGrpcSchema<TokensService, ITokensService>();
 
                 endpoints.MapGrpcSchemaRegistry();
 
