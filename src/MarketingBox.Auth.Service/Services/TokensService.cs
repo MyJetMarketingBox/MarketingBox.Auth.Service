@@ -22,8 +22,7 @@ namespace MarketingBox.Auth.Service.Services
         private const string UserIdClaim = "user-id";
         private const string UserNameClaim = "user-name";
         private const string TenantIdClaim = "tenant-id";
-
-
+        
         private readonly IUserRepository _userRepository;
         private readonly ICryptoService _cryptoService;
         private readonly string _tokenSecret;
