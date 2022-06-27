@@ -12,5 +12,6 @@ namespace MarketingBox.Auth.Service.Client
         }
 
         public IUserService GetUserService() => CreateGrpcService<IUserService>();
+        public ITokensService GetTokenService() => CreateGrpcService<ITokensService>();
     }
 }

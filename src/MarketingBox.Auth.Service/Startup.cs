@@ -50,6 +50,7 @@ namespace MarketingBox.Auth.Service
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcSchema<UserService, IUserService>();
+                endpoints.MapGrpcSchema<TokensService, ITokensService>();
 
                 endpoints.MapGrpcSchemaRegistry();
 

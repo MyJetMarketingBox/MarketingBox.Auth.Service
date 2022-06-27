@@ -1,4 +1,5 @@
-﻿using MyYamlParser;
+﻿using System;
+using MyYamlParser;
 
 namespace MarketingBox.Auth.Service.Settings
 {
@@ -27,5 +28,14 @@ namespace MarketingBox.Auth.Service.Settings
 
         [YamlProperty("MarketingBoxAuthService.EncryptionSecret")]
         public string EncryptionSecret { get; set; }
+
+        [YamlProperty("MarketingBoxAuthService.JwtTtl")]
+        public string JwtTtl { get; set; }
+
+        [YamlProperty("MarketingBoxAuthService.JwtSecret")]
+        public string JwtSecret { get; set; }
+
+        [YamlProperty("MarketingBoxAuthService.JwtAudience")]
+        public string JwtAudience { get; set; }
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using MarketingBox.Auth.Service.Domain.Models;
 using MarketingBox.Auth.Service.Grpc.Models;
 using MarketingBox.Auth.Service.Services.Interfaces;
 using MarketingBox.Auth.Service.Settings;
