@@ -15,7 +15,7 @@
     <PackageReference Include="MarketingBox.Sdk.Crypto" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.19.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.20.0" />
     <PackageReference Include="MyJetWallet.Sdk.GrpcMetrics" Version="2.0.4" />
     <PackageReference Include="MyJetWallet.Sdk.GrpcSchema" Version="1.0.6" />
     <PackageReference Include="MyJetWallet.Sdk.Postgres" Version="2.2.0" />
@@ -28,7 +28,7 @@
     <PackageReference Include="SimpleTrading.ServiceStatusReporterConnector" Version="1.0.9" />
     <PackageReference Include="MySettingsReader" Version="1.2.2" />
     <PackageReference Include="SimpleTrading.Telemetry" Version="1.0.3" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.19.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.20.0" />
   </ItemGroup>
 
   <ItemGroup>
